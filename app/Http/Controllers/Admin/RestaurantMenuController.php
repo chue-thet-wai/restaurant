@@ -78,6 +78,7 @@ class RestaurantMenuController extends Controller
                 //'status'            =>$request->status,
                 'menu_image'        =>$image_name,
                 'description'       =>$request->description,
+                'rating'            =>$request->rating,
                 'created_by'        =>$login_id,
                 'updated_by'        =>$login_id,
                 'created_at'        =>$this->nowDate,
@@ -159,6 +160,7 @@ class RestaurantMenuController extends Controller
                 'category_id'       =>$request->category,
                 'status'            =>$request->status,
                 'description'       =>$request->description,
+                'rating'            =>$request->rating,
                 'updated_by'        =>$login_id,
                 'updated_at'        =>$this->nowDate
             );

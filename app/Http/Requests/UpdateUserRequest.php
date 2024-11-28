@@ -25,10 +25,11 @@ class UpdateUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:250',
-            'email' => 'required|string|email:rfc,dns|max:250',
-            'password' => 'nullable|string|min:8|confirmed',
-            'roles' => 'required|array',
+            'first_name' => 'required|string|max:250',
+            'last_name'  => 'string|max:250',
+            'email'      => 'required|string|email:rfc,dns|max:250',
+            'password'   => 'nullable|string|min:8|confirmed',
+            'roles'      => 'required|array',
         ];
     }
 }

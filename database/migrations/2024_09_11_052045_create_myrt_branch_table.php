@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('name')->unique()->index();
             $table->tinyInteger('status')->default(1)->comment('0 :inactive , 1:active')->index();
+            $table->string('phone')->nullable()->index();
+            $table->string('address')->nullable()->index(); 
             $table->string('remark')->nullable()->index();
             $table->string('created_by')->nullable()->index();
             $table->string('updated_by')->nullable()->index();

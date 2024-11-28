@@ -7,17 +7,19 @@
                 <div class="row">
                     <div class="col-10 left">Your Information</div>
                     <div class="col-2 right">
-                        <a href="" class="header-icon">
-                            <i class="bi bi-info-square"></i>
+                        <a href="/information/{{$reservation->order_id}}" class="header-icon">
+                            <img src="{{ asset('assets/images/information.png') }}" alt="" >
                         </a>
                     </div>
                 </div>
             </div>
         </header>
-        <div class="mt-5 page">
-            @include('layouts.error')  <!-- Display error messages here -->
+        <div class="mt-3 page">
 
             <div class="information-card text-center">
+
+                @include('layouts.error')
+
                 <form class="px-3 mt-3" method="POST" action="{{ route('information.store') }}">
                     @csrf
 
@@ -37,7 +39,7 @@
                         <input type="email" class="form-control" id="email" value="{{$reservation->email}}" name="email" required>
                     </div>
 
-                    <button type="submit" class="mt-3 px-3 btn btn-primary">Reserved</button>
+                    <button type="submit" class="mt-5 px-3 btn btn-primary">Reserved</button>
                 </form>
             </div>
         </div>

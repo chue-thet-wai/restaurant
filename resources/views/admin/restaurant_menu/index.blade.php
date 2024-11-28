@@ -3,16 +3,22 @@
 @section('content')
 
 <x-container>
-    <div class="card">
-        <div class="card-header">Manage Restaurant Menu</div>
-        <div class="card-body">
-            @if ($check_permission['create'])
-                <a href="{{ route('restaurant_menu.create') }}" class="btn btn-success btn-sm my-2"><i class="bi bi-plus-circle"></i> Add New Menu</a>
-            @endif
+    <div class="card" id="custom-card">
+        <div class="card-body">  
+            <div class="button-container">
+                <a href="{{ route('restaurant_menu.index') }}" id="list-btn" class="list-active">
+                    Menu List
+                </a>
+                @if ($check_permission['create'])
+                    <a href="{{ route('restaurant_menu.create') }}" id="add-btn">
+                        Add New Menu
+                    </a>
+                @endif
+            </div>    
             
             @include('components.common_table', [
-                'headers' => ['Name','Status','Price','Description'],
-                'fields' => ['name','status','price','description'],
+                'headers' => ['Name','Status','Price','Rating','Description'],
+                'fields' => ['name','status','price','rating','description'],
                 'items' => $restaurant_menus,
                 'permissions' => $check_permission,
                 'action'       => true,

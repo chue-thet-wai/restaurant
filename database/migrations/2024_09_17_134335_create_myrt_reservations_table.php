@@ -22,6 +22,8 @@ return new class extends Migration
             $table->date('date')->index(); 
             $table->time('time')->index();  
             $table->integer('seat_count')->index();  
+            $table->longText('reject_note')->nullable();
+            $table->string('receipt')->nullable()->index();
             $table->string('created_by')->nullable()->index();
             $table->string('updated_by')->nullable()->index();
             $table->timestamps();  

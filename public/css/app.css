@@ -1,12 +1,18 @@
 :root {
     scroll-behavior: smooth;
-    --primary-color: #01949F;
-    --secondary-color: #003539;
+    --primary-color: #02CDDE;
+    --secondary-color: #016F78;
     --link-color: #4154f1;
     --hover-color: #717ff5;
     --alert-color: #b33440;
     --background-color: #f2f2f2;
-    --text-color:#ffffff;
+    --text-color: #ffffff;
+    --input-color: #58b1b3;
+}
+
+body {
+    background: var(--secondary-color);
+    color: var(--text-color);
 }
 
 .btn-primary,
@@ -28,3 +34,127 @@
     border-color: var(--primary-color) !important;
     color: var(--text-color) !important;
 }
+
+/*Start Login form*/
+.login-container {
+    background: var(--secondary-color);
+    border-radius: 10px;
+    display: flex;
+    color: var(--text-color);
+    width: 70%;
+    margin: auto;
+    flex-direction: row; /* Keep panels side by side for larger screens */
+}
+
+.left-panel {
+    padding: 30px;
+    display: flex;
+    align-items: center;
+    width: 50%;
+    border-right: 2px solid var(--input-color);
+}
+
+.left-panel img {
+    max-width: 70%;
+    margin:auto;
+}
+
+.right-panel {
+    background-color: var(--secondary-color);
+    padding: 40px;
+    border-radius: 0 10px 10px 0;
+    margin-left: 5%;
+    width: 50%;
+}
+
+#login-profile {
+    width: 25%;
+    border-radius: 50%;
+    margin-left: 40%;
+}
+
+.input-group-text,
+.input-group-prepend {
+    border: none;
+    border-radius: 0%;
+    background-color: var(--input-color);
+}
+
+#login-icon{
+    width: 20px;
+}
+
+#login-remember {
+    background-color: var(--input-color);
+    border: none;
+    border-radius: 0%;
+}
+
+#login-email,
+#login-password {
+    background-color: var(--input-color);
+    color: #000000;
+    border-radius: 0%;
+    border: none;
+}
+
+#login-email:focus,
+#login-password:focus {
+    box-shadow: none;
+    outline: none;
+}
+
+#login-submit {
+    background-color: var(--input-color) !important;
+    color: var(--text-color);
+    border: none;
+    border-radius: 0%;
+    padding: 2% 10%;
+    margin-left: 40%;
+}
+
+@media (max-width: 768px) {
+    .login-container {
+        flex-direction: column; 
+        width: 90%;
+    }
+
+    .left-panel,
+    .right-panel {
+        width: 100%;
+        margin-left: 0; 
+        border: none; 
+        padding: 20px;
+        text-align: center;
+    }
+
+    #login-profile {
+        width: 35%; 
+        margin: 0 auto; 
+    }
+
+    #login-submit {
+        margin-left: 0;
+        width: 100%;
+        padding: 10px 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .left-panel img {
+        max-width: 90%; 
+    }
+
+    .right-panel {
+        padding: 20px;
+    }
+
+    #login-profile {
+        width: 45%;
+    }
+
+    #login-submit {
+        padding: 10px 0;
+    }
+}
+/*End Login form*/

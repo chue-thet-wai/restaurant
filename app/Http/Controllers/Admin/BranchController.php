@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\BranchRequest;
 use App\Interfaces\CommonRepositoryInterface;
 use App\Models\Branch;
+use App\Models\BranchOpeningTime;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
@@ -16,11 +17,13 @@ class BranchController extends Controller
 {
     private CommonRepositoryInterface $commonRepository;
     protected $nowDate;
+    public $days;
 
     public function __construct(CommonRepositoryInterface $commonRepository) 
     {
         $this->commonRepository = $commonRepository;
         $this->nowDate  = date('Y-m-d H:i:s', time());
+        $this->days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     }
     /**
      * Display a listing of the resource.
@@ -61,6 +64,8 @@ class BranchController extends Controller
 
             $insertData = array(
                 'name'           =>$request->name,
+                'phone'          =>$request->phone,
+                'address'        =>$request->address,
                 'remark'         =>$request->remark,
                 'created_by'     =>$login_id,
                 'updated_by'     =>$login_id,
@@ -68,7 +73,26 @@ class BranchController extends Controller
                 'updated_at'     =>$this->nowDate
             );
 
-            $result=Branch::insert($insertData);     
+            $resultBranch=Branch::create($insertData); 
+            $branch_id = $resultBranch->id;
+            
+            $openingHours = [];
+            
+            foreach ($this->days as $day) {
+                $openingHours[] = [
+                    'day'            => $day,
+                    'start_time'     => $request->opening_time[$day],
+                    'end_time'       => $request->closing_time[$day],
+                    'is_offday'      => $request->has("offday.{$day}") ? 1 : 0,
+                    'branch_id'      => $branch_id,
+                    'created_by'     => $login_id,
+                    'updated_by'     => $login_id,
+                    'created_at'     => $this->nowDate,
+                    'updated_at'     => $this->nowDate
+                ];
+            }
+
+            $result=BranchOpeningTime::insert($openingHours); 
 
             if($result){
                 DB::commit(); 
@@ -103,11 +127,32 @@ class BranchController extends Controller
     public function edit($branchID): View
     {
         $branch = Branch::find($branchID);
-        $status           = $this->commonRepository->getStatus();
+        
+        $durationTime = $branch->duration_time;
+        $durationHours = $durationMinutes = null;
+        if ($durationTime) {
+            list($durationHours, $durationMinutes) = explode(':', $durationTime);
+        }
+
+        $status = $this->commonRepository->getStatus();
+
+        $openingHours = BranchOpeningTime::where('branch_id', $branchID)->get()->keyBy('day');
+
+        $openingTimes = [];
+        foreach ($openingHours as $openingHour) {
+            $openingTimes[$openingHour->day] = [
+                'start_time' => $openingHour->start_time,
+                'end_time' => $openingHour->end_time,
+                'is_offday' => $openingHour->is_offday,
+            ];
+        }
 
         return view('admin.branch.edit', [
             'branch'        => $branch,
-            'status'        => $status
+            'status'        => $status,
+            'openingTimes'  => $openingTimes,
+            'durationHours' => $durationHours,
+            'durationMinutes' => $durationMinutes,
         ]);
     }
 
@@ -121,6 +166,8 @@ class BranchController extends Controller
         try{
             $updateData = array(
                 'name'           =>$request->name,
+                'phone'          =>$request->phone,
+                'address'        =>$request->address,
                 'status'         =>$request->status,
                 'remark'         =>$request->remark,
                 'updated_by'     =>$login_id,
@@ -128,6 +175,19 @@ class BranchController extends Controller
             );
             
             $result=Branch::where('id',$branchID)->update($updateData);
+
+            foreach ($this->days as $day) {
+                BranchOpeningTime::updateOrCreate(
+                    ['branch_id' => $branchID, 'day' => $day],
+                    [
+                        'start_time'     => $request->opening_time[$day],
+                        'end_time'       => $request->closing_time[$day],
+                        'is_offday'      => $request->has("offday.{$day}") ? 1 : 0,
+                        'updated_by'     => $login_id,
+                        'updated_at'     => $this->nowDate
+                    ]
+                );
+            }
                       
             if($result){
                 DB::commit();               

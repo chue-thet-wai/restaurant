@@ -5,13 +5,18 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Interfaces\CommonRepositoryInterface;
 use App\Models\Branch;
+use App\Models\BranchOpeningTime;
 use App\Models\Category;
 use App\Models\OrderMenu;
 use App\Models\Reservation;
 use App\Models\RestaurantMenu;
+use App\Models\Tables;
+use App\Models\TimeSlots;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 
 class WebappController extends Controller
 {
@@ -30,8 +35,10 @@ class WebappController extends Controller
     public function reservation()
     {
         $branchList = Branch::get();
+        $timeslots  = TimeSlots::get();
         return view('webapp.reservation', [
-            'branches' => $branchList
+            'branches' => $branchList,
+            'timeslots'=> $timeslots
         ]);
     }
 
@@ -41,6 +48,7 @@ class WebappController extends Controller
         $request->validate([
             'branch'     => 'required',
             'email'      => 'required|email',
+            'phone'      => 'required',
             'date'       => 'required|date',
             'time'       => 'required',
             'seat_count' => 'required|integer|min:1',
@@ -56,6 +64,7 @@ class WebappController extends Controller
                 'order_id'   =>$orderId,
                 'branch_id'  =>$request->branch,
                 'email'      =>$request->email,
+                'phone'      =>$request->phone,
                 'date'       =>$request->date,
                 'time'       =>$request->time,
                 'seat_count' =>$request->seat_count,
@@ -67,7 +76,7 @@ class WebappController extends Controller
 
             if($result){
                 DB::commit(); 
-                return redirect()->back()->with('success', 'Reservation successful! Your order ID is ' . $orderId);
+                return redirect()->back()->with('success', 'Your reservation has been submitted. We will inform you of your reservation status via email.');
             }else{
                 DB::rollback();
                 return redirect()->back()->with('danger','Something is wrong.Please contact with developer');
@@ -77,6 +86,14 @@ class WebappController extends Controller
             Log::info($e->getMessage());
             return redirect()->back()->with('danger','Something is wrong.Please contact with developer');
         }  
+    }
+
+    public function reservationStatus($orderID)
+    {
+        $reservation = Reservation::where('order_id',$orderID)->first();
+        return view('webapp.reservation_status',[
+            'reservation' => $reservation
+        ]);
     }
 
     public function information($orderID)
@@ -102,7 +119,7 @@ class WebappController extends Controller
 
             $updateData = array(
                 'name'       =>$request->name,
-                'phone'      =>$request->branch,
+                'phone'      =>$request->phone,
                 'email'      =>$request->email,
                 'updated_at' =>$this->nowDate
             );
@@ -131,17 +148,39 @@ class WebappController extends Controller
         ]);
     }
 
+    public function downloadReservationConfirm($orderID)
+    {
+        $reservation = Reservation::where('order_id', $orderID)->first();
+        $branch = null;
+        if ($reservation) {
+            $branch      = Branch::where('id',$reservation->branch_id)->first();
+        }
+        
+        
+        $pdf = Pdf::loadView('pdf.booking_detail', compact('reservation','branch'));
+
+        $fileName = 'booking_detail_'.$orderID.'.pdf';
+
+        return $pdf->download($fileName);
+    }
+
     public function menuList($orderID)
     {
         $categories = Category::with('menuItems')->get();
         $reservation = Reservation::where('order_id',$orderID)->first();
+        $cartCount = 0;
+        if (session()->has('cart')) {
+            $cart = session()->get('cart', []);
+            $cartCount = array_sum(array_column($cart, 'quantity'));
+        }
         return view('webapp.menu_list', [
             'categories' => $categories,
-            'reservation' => $reservation
+            'reservation' => $reservation,
+            'cartCount'   => $cartCount
         ]);
     }
 
-    public function getMenuItems($id)
+    public function getMenuItems($orderID,$id)
     {
         if ($id == 'all') {
             $menuItems = RestaurantMenu::all();
@@ -157,10 +196,16 @@ class WebappController extends Controller
     {
         $menuDeatil = RestaurantMenu::find($id);
         $reservation = Reservation::where('order_id',$orderID)->first();
+        $cartCount = 0;
+        if (session()->has('cart')) {
+            $cart = session()->get('cart', []);
+            $cartCount = array_sum(array_column($cart, 'quantity'));
+        }
 
         return view('webapp.menu_detail', [
             'menu_detail' => $menuDeatil,
-            'reservation' => $reservation
+            'reservation' => $reservation,
+            'cartCount'   => $cartCount
         ]);
     }
 
@@ -228,14 +273,23 @@ class WebappController extends Controller
                 'quantity' => $item['quantity'],
                 'price'    => $item['price'],
             ]);
+            
         }
         if ($image_name != "") {
-            $image->move(public_path('assets/receipts'),$image_name);  
+            $image->move(public_path('assets/receipts'),$image_name);
+
+            //update the receipt image
+            Reservation::where('order_id', $orderID)->update(['receipt' => $image_name]);  
         }
 
         session()->forget('cart');
 
-        return redirect()->to('/reservation-confirm/'.$orderID);
+        return redirect()->to('/congratulation');
     }
 
+    public function congratulation()
+    {
+        return view('webapp.congratulation');
+    }
+    
 }

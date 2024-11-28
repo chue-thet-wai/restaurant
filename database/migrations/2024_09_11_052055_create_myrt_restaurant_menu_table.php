@@ -19,6 +19,7 @@ return new class extends Migration
             $table->tinyInteger('status')->default(1)->comment('0 :inactive , 1:active')->index();
             $table->string('menu_image')->nullable()->index();
             $table->string('description')->nullable()->index();
+            $table->tinyInteger('rating')->default(0)->index();
             $table->string('created_by')->nullable()->index();
             $table->string('updated_by')->nullable()->index();
             $table->softDeletes();            

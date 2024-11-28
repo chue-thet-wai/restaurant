@@ -5,26 +5,30 @@
         <header>
             <div class="system-bar">
                 <div class="row">
-                    <div class="col-2 left" id="menu-left">
+                    <div class="col-2" id="menu-left">
                         <a href="/menu/{{$reservation->order_id}}" class="header-icon">
-                            <i class="bi bi-arrow-bar-left"></i> 
+                            <img src="{{ asset('assets/images/back.png') }}" alt="" >
                         </a>
                     </div>
                     <div class="col-8"></div>
                     <div class="col-2 right">
                         <a href="/order-summary/{{$reservation->order_id}}" class="header-icon">
-                            <i class="bi bi-cart3"></i> 
+                            <img src="{{ asset('assets/images/add-to-cart.png') }}" alt="" >
+                            @if($cartCount > 0)
+                                <span class="cart-count">{{ $cartCount }}</span>
+                            @endif
                         </a>
                     </div>
                 </div>
             </div>
         </header>
 
-        <div class="mt-5 page">
-            @include('layouts.error')  <!-- Display error messages here -->
+        <div class="mt-3 page">
 
             <!-- Menu Detail Card -->
             <div class="menu-detail-card text-center mx-auto">
+                @include('layouts.error')
+
                 <!-- Menu Item Image -->
                 <img src="{{ asset('assets/menu_images/'.$menu_detail->menu_image) }}" alt="" class="img-fluid rounded" style="object-fit: cover; height: 200px; width: 100%;">
 
@@ -32,8 +36,16 @@
                 <div class="pt-3">
                     <!-- Name and Rating in one row -->
                     <div class="d-flex justify-content-between align-items-center mb-2">
-                        <h5 class="mb-0">{{$menu_detail->name}}</h5>
-                        <span class="text-warning">★★★★☆</span> <!-- Star ratings -->
+                        <h5 class="mb-0">{{ $menu_detail->name }}</h5>
+                        <span class="text-warning" id="detail-rating">
+                            @for($i = 1; $i <= 5; $i++)
+                                @if ($menu_detail->rating != 0 && $i <= $menu_detail->rating)
+                                    ★
+                                @else
+                                    ☆
+                                @endif
+                            @endfor
+                        </span> <!-- Star ratings -->
                     </div>
 
                     <!-- Price and Quantity Increment in one row -->

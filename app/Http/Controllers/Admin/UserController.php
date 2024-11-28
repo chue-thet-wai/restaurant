@@ -59,12 +59,13 @@ class UserController extends Controller
     {
         $login_id = Auth::user()->id;
         $user = User::create([
-            'name'           => $request->name,
+            'first_name'     => $request->first_name,
+            'last_name'      => $request->last_name,
             'email'          => $request->email,
             'password'       => Hash::make($request->password),
             'is_admin'       => true,
-            'created_by'     =>$login_id,
-            'updated_by'     =>$login_id,
+            //'created_by'     =>$login_id,
+            //'updated_by'     =>$login_id,
             'created_at'     =>$this->nowDate,
             'updated_at'     =>$this->nowDate
         ]);
@@ -110,17 +111,17 @@ class UserController extends Controller
 
         $login_id = Auth::user()->id;
         $updateData = [
-            'name'           => $request->name,
+            'first_name'     => $request->first_name,
+            'last_name'      => $request->last_name,
             'email'          => $request->email,
         ];       
  
         if(!empty($request->password)){
             $updateData['password'] = Hash::make($request->password);
-        }else{
-            $updateData = $request->except('password');
         }
+
         $updateData['is_admin'] = true;
-        $updateData['updated_by'] = $login_id;
+        //$updateData['updated_by'] = $login_id;
         $updateData['updated_at'] = $this->nowDate;
 
         $user = User::find($userId);

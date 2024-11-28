@@ -1,14 +1,18 @@
 :root {
     scroll-behavior: smooth;
-    --primary-color: #01949F;
-    --secondary-color: #003539;
+    --primary-color: #02CDDE;
+    --secondary-color: #016F78;
     --link-color: #4154f1;
     --hover-color: #717ff5;
     --alert-color: #b33440;
     --background-color: #f2f2f2;
     --text-color: #ffffff;
-    --content-background-color: #08acbc; 
+    --content-background-primary-color: #02cdde; 
+    --content-background-secondary-color: #016f78; 
     --input-color : #80c9cf;
+    --header-primary-color:#739391;
+    --header-secondary-color:#232D2F;
+    --nav-underline-color: #000000;
 }
 
 body {
@@ -17,6 +21,8 @@ body {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-size: 1rem !important;
+    font-family: "Nunito", sans-serif;
 }
 
 a {
@@ -28,33 +34,37 @@ a:hover {
     color: var(--hover-color);
 }
 
-h1, h2, h3, h4, h5, h6 {
-    font-family: "Nunito", sans-serif;
-}
-
 .btn-primary, .btn-danger, .btn-success, .btn-secondary, .btn-warning {
-    background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%) !important;
+    background: linear-gradient(170deg, var(--primary-color) 0%, var(--secondary-color) 100%) !important;
     border-color: var(--primary-color) !important;
     color: var(--text-color) !important;
+    font-size: 1.5rem !important;
+    border:none !important;
 }
 
 .btn-primary:hover, .btn-danger:hover, .btn-success:hover, .btn-secondary:hover, .btn-warning:hover {
-    background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%) !important;
+    background: linear-gradient(170deg, var(--primary-color) 0%, var(--secondary-color) 100%) !important;
     border-color: var(--primary-color) !important;
     color: var(--text-color) !important;
+    font-size: 1.5rem !important;
+    border:none !important;
+}
+
+label {
+    font-size: 1rem !important;
 }
 
 header {
-    position: fixed;
+    /*position: fixed;*/
     top: 0;
     left: 0;
     right: 0;
     height: 50px; 
-    background: var(--content-background-color);
+    /*background: var(--content-background-primary-color);*/
     color: var(--text-color);
     display: flex;
     align-items: center;
-    padding: 4pt 8pt;
+    padding: 4pt 0pt;
     z-index: 1000; 
 }
 
@@ -65,37 +75,41 @@ header .system-bar {
     height: 100%; 
     line-height: 10pt;
     font-size: 6pt;
-    font-family: 'Helvetica Neue';
     font-weight: 500;
-    padding: 8pt 5pt;
+    padding: 8pt 0pt;
 }
 
 
 .system-bar .left {
-    background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%) !important;
+    background: linear-gradient(90deg, var(--header-primary-color) 0%, var(--header-secondary-color) 100%) !important;
     font-size: 1.5rem;
     text-align: center;
     padding: 15px;
     border-radius: 0px 5px 5px 0px;
-    box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.2);
+    box-shadow: 2px 4px 6px var(--nav-underline-color);
     display: inline-block;
     width: auto;
 }
 
 #menu-left{
-    background:var(--content-background-color) !important;
+    font-size: 1.5rem;
+    text-align: center;
+    padding: 15px;
+    border-radius: 0px 5px 5px 0px;
+    display: inline-block;
+    width: auto;
     border:none !important;
     box-shadow: none !important;
 }
 
 
 .system-bar .center {
-    background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%) !important;
+    background: linear-gradient(90deg, var(--header-primary-color) 0%, var(--header-secondary-color) 100%) !important;
     font-size: 1.5rem;
     text-align: center;
-    padding: 15px;
+    padding: 20px;
     border-radius: 5px 5px;
-    box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.2);
+    box-shadow: 2px 4px 6px var(--nav-underline-color);
     display: inline-block;
     width: auto;
 }
@@ -103,7 +117,7 @@ header .system-bar {
 main {
     position: relative;
     box-shadow: 0 16pt 24pt rgba(121, 119, 119, 0.25);
-    background: var(--content-background-color);
+    background-image: linear-gradient(var(--content-background-primary-color), var(--content-background-secondary-color));
     width: 100%;
     max-width: 1200px;
     margin: 0 auto;
@@ -128,7 +142,7 @@ main {
     }
     header {
         margin: 0 auto;
-        width: 35%;
+        width: 100%;
     }
 }
 
@@ -163,17 +177,39 @@ main {
 .header-icon {
     color: var(--text-color);
     font-size: 1.2rem;
+    position: relative;
+    display: inline-block;
+}
+.header-icon img{
+    width:30px;
+}
+.logo img{
+    width:40%;
 }
 
 .reservation-card,
 .information-card,
 .reservation-confirm-card,
+.reservation-status-card,
 .menu-card,
 .menu-detail-card,
 .order-summary-card {
     padding: 3%;
-    margin-top:20%;
 }
+.order-summary-card {
+    font-size: 1.2rem !important;
+}
+
+/* Custom icons styling */
+.custom-icon {
+    pointer-events: none; /* Prevent icon from interfering with input */
+    right: 10px;
+    top: 10px;
+    width: 20px;
+    height: 20px;
+    position: absolute;
+}
+
 
 #seat-count {
     width: 80px;
@@ -194,21 +230,41 @@ select {
     border-radius: 5px;
     outline: none;
 }
+.email-input::placeholder,
+.tel-input::placeholder {
+    color: var(--text-color) !important; 
+}
+
+/* Additional reset for specific WebKit-based browsers */
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-calendar-picker-indicator {
+    opacity: 0; 
+}
+
+/* Optional for Firefox-specific styling if needed */
+input[type="date"]::-moz-calendar-picker-indicator,
+input[type="time"]::-moz-calendar-picker-indicator {
+    opacity: 0; 
+}
+
 #decrement,
 #increment {
-    width:35px;
+    width:40px;
     background-color: var(--input-color) !important; 
     color:var(--text-color);
     border-radius: 5px;
     border: none;
-    font-size:1.5rem;
-    font-weight: 800;
+}
+
+#decrement img,
+#increment img{
+    width:100%;
 }
 
 /* Menu item container */
 .menu-item {
     border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 6px var(--nav-underline-color);
     margin-bottom: 20px;
     text-align: center;
     border:1px solid var(--text-color);
@@ -217,24 +273,29 @@ select {
 /* Style for the images */
 .menu-img {
     width:100%;
-    height: auto;
+    height: 100px;
+    border-radius: 10px;
+}
+
+#menuTab{
+    font-size: 1.2rem !important;
 }
 
 #menuTab .nav-link.active {
-    background-color: var(--content-background-color);
-    border-bottom: 2px solid #000; /* Black underline */
+    background-color: var(--content-background-primary-color);
+    border-bottom: 2px solid var(--nav-underline-color);
 }
 
 #menuTab .nav-link:hover {
     border-bottom: 2px solid var(--text-color);
 }
 #menuTab .nav-link{
-    color:#ffffff !important;
+    color:var(--text-color) !important;
     border:none;
 }
 .menu-detail-card #price-add-card {
     background-color: var(--text-color);
-    color:var(--content-background-color);
+    color:var(--content-background-primary-color);
     padding:5%;
     border-radius: 5px;
 }
@@ -250,10 +311,66 @@ select {
 }
 
 #ordersummary-subtotal {
-    border-top:1px solid #ffffff !important;
+    border-top:1px solid var(--text-color) !important;
 }
 #ordersummary-tax{
-    border-bottom: 1px solid #ffffff !important;
+    border-bottom: 1px solid var(--text-color) !important;
+}
+
+.cart-count {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 12px;
+    font-weight: bold;
+}
+#reservation-confirm-btn{
+    width:200px;
+}
+
+#reservation-status-card .card-success,
+#reservation-status-card .card-failure {
+    background: linear-gradient(90deg, var(--primary-color) 100%, var(--secondary-color) 100%) !important;
+    padding: 5%;
+    color: var(--text-color);
+    border: none !important;
+    border-radius: 5%;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+#reservation-status-card .card-success .card-title,
+#reservation-status-card .card-failure .card-title {
+    color :var(--link-color);
+}
+
+#reservation-status-card .card-success .close,
+#reservation-status-card .card-failure .close {
+    color:var(--text-color);
+}
+
+.icon-check i {
+    font-size: 100px;
+    color: #00FF7F; 
+}
+
+.congratulations-text {
+    font-size: 24px;
+    color: var(--text-color);
+    margin-bottom: 50px;
+}
+
+.btn-home button {
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    color: var(--text-color);
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background 0.3s ease;
 }
 
 

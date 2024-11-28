@@ -2,26 +2,36 @@
 
 @section('content')
 <x-container>
-    <div class="card">
-        <div class="card-header">
-            <div class="float-start">
-                Edit User
-            </div>
-            <div class="float-end">
-                <a href="{{ route('users.index') }}" class="btn btn-primary btn-sm">&larr; Back</a>
-            </div>
-        </div>
+    <div class="card" id="custom-card">     
         <div class="card-body">
-            <form action="{{ route('users.update', $user->id) }}" method="post">
+            <div class="button-container">
+                <a href="{{ route('users.index') }}" id="list-btn">
+                    User List
+                </a>
+                <a href="{{ route('users.create') }}" id="add-btn" class="add-active">
+                    Add New User
+                </a>
+            </div>  
+            <form class="mt-3" action="{{ route('users.update', $user->id) }}" method="post">
                 @csrf
                 @method("PUT")
 
                 <div class="mb-3 row">
-                    <label for="name" class="col-md-4 col-form-label text-md-end text-start">Name</label>
+                    <label for="first_name" class="col-md-4 col-form-label text-md-end text-start">First Name</label>
                     <div class="col-md-6">
-                        <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" value="{{ $user->name }}">
-                        @if ($errors->has('name'))
-                            <span class="text-danger">{{ $errors->first('name') }}</span>
+                        <input type="text" class="form-control @error('first_name') is-invalid @enderror" id="first_name" name="first_name" value="{{ $user->first_name }}">
+                        @if ($errors->has('first_name'))
+                            <span class="text-danger">{{ $errors->first('first_name') }}</span>
+                        @endif
+                    </div>
+                </div>
+
+                <div class="mb-3 row">
+                    <label for="last_name" class="col-md-4 col-form-label text-md-end text-start">Last Name</label>
+                    <div class="col-md-6">
+                        <input type="text" class="form-control @error('last_name') is-invalid @enderror" id="last_name" name="last_name" value="{{ $user->last_name }}">
+                        @if ($errors->has('last_name'))
+                            <span class="text-danger">{{ $errors->first('last_name') }}</span>
                         @endif
                     </div>
                 </div>
@@ -68,8 +78,9 @@
                     </div>
                 </div>
                 
-                <div class="mb-3 row">
-                    <input type="submit" class="col-md-3 offset-md-5 btn btn-primary" value="Update User">
+                <div class="mb-3 me-5 row justify-content-end">
+                    <input type="submit" class="col-1 btn" id="btn-apply" value="Apply">
+                    <a class="col-1 btn ms-2" id="btn-cancel" href="{{ route('users.index') }}">Cancel</a>
                 </div>
                 
             </form>

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
@@ -13,21 +14,49 @@ class BranchRequest extends FormRequest
     {
         return true;
     }
-    
+
     public function rules()
     {
         $branchID = $this->route('branch'); // Get the ID from the route
+        $days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-        // Initialize the rules
         $rules = [
             'name'   => [
                 'required', 
                 'string', 
                 'max:255',
-                Rule::unique('myrt_branch', 'name')->ignore($branchID) // Check for uniqueness, ignoring the current branch
+                Rule::unique('myrt_branch', 'name')->ignore($branchID)
             ],
-            'remark' => ['nullable', 'string'],
+            'phone'   => ['nullable', 'string'],
+            'address' => ['nullable', 'string'],
+            'remark'  => ['nullable', 'string'],
         ];
+
+        foreach ($days as $day) {
+            $rules["opening_time.$day"] = ['nullable'];
+            $rules["closing_time.$day"] = ['nullable'];
+
+            $rules["opening_time.$day"][] = function ($attribute, $value, $fail) use ($day) {
+                $closingTime = $this->input("closing_time.$day");
+
+                if ($value && !$closingTime) {
+                    $fail("To time is needed for $day .");
+                }
+
+                if (!$value && $closingTime) {
+                    $fail("From time for $day .");
+                }
+
+                if ($value && $closingTime) {
+                    $openingTime = strtotime($value);
+                    $closingTime = strtotime($closingTime);
+
+                    if ($openingTime >= $closingTime) {
+                        $fail("From Time must be earlier than To Time for $day.");
+                    }
+                }
+            };
+        }
 
         return $rules;
     }

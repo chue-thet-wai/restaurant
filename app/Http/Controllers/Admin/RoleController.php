@@ -43,18 +43,12 @@ class RoleController extends Controller
      */
     public function create(): View
     {
-        $menu       =  Menu::where('id','!=','4')->get();
-
-        $permissionNotIn = ['QuestionController@create','QuestionController@store','QuestionController@edit',
-                            'QuestionController@update','QuestionController@destroy',
-                            'QuestionController@storeAnswer','QuestionController@destroyAnswer'];
+        $menu       =  Menu::get();
 
         $permission=[];
         $permissions_list = Permission::get();
         foreach($permissions_list as $per) {
-            if (!in_array($per->name,$permissionNotIn)) {
-                $permission[$per->menu_id][$per->action] = $per->id;
-            }
+            $permission[$per->menu_id][$per->action] = $per->id;
         }
 
         return view('admin.roles.create', [
@@ -110,19 +104,13 @@ class RoleController extends Controller
      */
     public function edit($roleId): View
     {
-        $menu       =  Menu::where('id','!=','4')->get();
-
-        $permissionNotIn = ['QuestionController@create','QuestionController@store','QuestionController@edit',
-                            'QuestionController@update','QuestionController@destroy',
-                            'QuestionController@storeAnswer','QuestionController@destroyAnswer'];
+        $menu       =  Menu::get();
 
         $permission=[];
         $permissions_list = Permission::get();
         
         foreach($permissions_list as $per) {
-            if (!in_array($per->name,$permissionNotIn)) {
-                $permission[$per->menu_id][$per->action] = $per->id;
-            }
+            $permission[$per->menu_id][$per->action] = $per->id;
         }
 
         $role = Role::find($roleId);

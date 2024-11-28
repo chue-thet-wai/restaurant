@@ -3,17 +3,17 @@
 @section('content')
 
 <x-container>
-    <div class="card">
-        <div class="card-header">
-            <div class="float-start">
-                Add New Menu
-            </div>
-            <div class="float-end">
-                <a href="{{ route('restaurant_menu.index') }}" class="btn btn-primary btn-sm">&larr; Back</a>
-            </div>
-        </div>
+    <div class="card" id="custom-card">     
         <div class="card-body">
-            <form action="{{ route('restaurant_menu.store') }}" method="post" enctype="multipart/form-data">
+            <div class="button-container">
+                <a href="{{ route('restaurant_menu.index') }}" id="list-btn">
+                    Menu List
+                </a>
+                <a href="{{ route('restaurant_menu.create') }}" id="add-btn" class="add-active">
+                    Add New Menu
+                </a>
+            </div>   
+            <form class="mt-3" action="{{ route('restaurant_menu.store') }}" method="post" enctype="multipart/form-data">
                 @csrf
 
                 <div class="mb-3 row">
@@ -72,9 +72,23 @@
                         @endif
                     </div>
                 </div>
-                
                 <div class="mb-3 row">
-                    <input type="submit" class="col-md-3 offset-md-5 btn btn-primary" value="Add Menu">
+                    <label for="rating" class="col-md-4 col-form-label text-md-end text-start"><strong>Rating:</strong></label>
+                    <div class="col-md-6">
+                        <select class="form-control @error('rating') is-invalid @enderror" id="rating" name="rating">
+                            @for($i = 0; $i <= 5; $i++)
+                                <option value="{{ $i }}">{{ $i }}</option>
+                            @endfor
+                        </select>
+                        @if ($errors->has('rating'))
+                            <span class="text-danger">{{ $errors->first('rating') }}</span>
+                        @endif
+                    </div>
+                </div>
+                
+                <div class="mb-3 me-5 row justify-content-end">
+                    <input type="submit" class="col-1 btn" id="btn-apply" value="Apply">
+                    <a class="col-1 btn ms-2" id="btn-cancel" href="{{ route('restaurant_menu.index') }}">Cancel</a>
                 </div>
             </form>
         </div>

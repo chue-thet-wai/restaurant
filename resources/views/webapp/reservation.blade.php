@@ -8,22 +8,22 @@
                     <div class="col-10"></div>
                     <div class="col-2 right">
                         <a href="" class="header-icon">
-                            <i class="bi bi-translate"></i>
+                            <img src="{{ asset('assets/images/translate.png') }}" alt="" >
                         </a>
                     </div>
                 </div>
             </div>
         </header>
-        <div class="mt-5 page">
-            @include('layouts.error')  <!-- Display error messages here -->
-
+        <div class="mt-3 page">
             <div class="reservation-card text-center">
-                <h3 style="color: #fff;">Welcome</h3>
-                <p style="color: #b9f7f7;">Our New Experience</p>
-                <br />
-                <h4 style="color: #fff;">RESERVATION</h4>
+                @include('layouts.error')  <!-- Display error messages here -->
 
-                <form class="px-3 mt-3" method="POST" action="{{ route('reservation.store') }}">
+                <h3>Welcome</h3>
+                <p>Our New Experience</p>
+                <br />
+                <h4>RESERVATION</h4>
+
+                <form class="px-3 mt-2" method="POST" action="{{ route('webapp.reservation.store') }}">
                     @csrf
                     <div class="mb-3">
                         <select class="form-control" id="branch" name="branch" required>
@@ -33,24 +33,50 @@
                             @endforeach
                         </select>
                     </div>
+
                     <div class="mb-3">
-                        <input type="email" class="form-control" id="email" name="email" required placeholder="Email">
+                        <input type="email" class="form-control email-input" id="email" name="email" required placeholder="Email">
                     </div>
+
                     <div class="mb-3">
-                        <input type="date" class="form-control" id="date" name="date" required>
+                        <input type="tel" class="form-control tel-input" id="phone" name="phone" required placeholder="Phone">
                     </div>
-                    <div class="mb-3">
-                        <input type="time" class="form-control" id="time" name="time" required>
+
+                    <div class="mb-3 position-relative">
+                        <input type="date" class="form-control" id="date" name="date" required min="{{ \Carbon\Carbon::today()->format('Y-m-d') }}">
+                        <img src="{{ asset('assets/images/calendar.png') }}" alt="Calendar Icon" class="custom-icon">
                     </div>
+
+                    <div class="mb-3 position-relative">
+                        <select class="form-control" id="time" name="time" required>
+                            @foreach($timeslots as $timeslot)
+                                <option value="{{ $timeslot->time }}">{{ \Carbon\Carbon::parse($timeslot->time)->format('g:i A') }}</option>
+                            @endforeach
+                        </select>
+                        <img src="{{ asset('assets/images/clock.png') }}" alt="Clock Icon" class="custom-icon">
+                    </div>
+
+                    <!-- Seat count with increment/decrement -->
                     <div class="d-flex justify-content-end mb-3 align-items-center">
                         <div class="d-flex align-items-center">
-                            <input type="number" class="form-control me-2" id="seat-count" name="seat_count" value="1" min="1" readonly style="background: #d4f4f4; border: none;">
-                            <button type="button" class="btn btn-outline-light me-2" id="decrement">-</button>
-                            <button type="button" class="btn btn-outline-light" id="increment">+</button>
+                            <input type="number" class="form-control me-2" id="seat-count" name="seat_count" value="1" min="1" readonly>
+                            <button type="button" class="btn btn-outline-light me-2" id="decrement">
+                                <img src="{{ asset('assets/images/sub.png') }}" alt="">
+                            </button>
+                            <button type="button" class="btn btn-outline-light" id="increment">
+                                <img src="{{ asset('assets/images/add.png') }}" alt="">
+                            </button>
                         </div>
                     </div>
-                    <button type="submit" class="mt-3 p-2 btn btn-primary w-100" style="background-color: #0e728a; border: none;">Check Available</button>
+
+                    <!-- Submit button -->
+                    <button type="submit" class="mt-4 p-2 btn btn-primary w-100">Check Available</button>
                 </form>
+
+                <!-- Logo -->
+                <div class="mt-5 mb-3 logo">
+                    <img src="{{ asset('assets/images/techy-solutions.png') }}" alt="">
+                </div>
             </div>
         </div>
     </div>

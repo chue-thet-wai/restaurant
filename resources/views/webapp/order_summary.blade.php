@@ -5,9 +5,9 @@
     <header>
         <div class="system-bar">
             <div class="row">
-                <div class="col-2 left" id="menu-left">
+                <div class="col-2" id="menu-left">
                     <a href="/menu/{{$reservation->order_id}}" class="header-icon">
-                        <i class="bi bi-arrow-bar-left"></i>
+                        <img src="{{ asset('assets/images/back.png') }}" alt="" >
                     </a>
                 </div>
                 <div class="col-8"></div>
@@ -16,7 +16,7 @@
         </div>
     </header>
 
-    <div class="mt-5 page">
+    <div class="mt-3 page">
         @include('layouts.error')  <!-- Display error messages here -->
 
         <!-- Order Summary Section -->

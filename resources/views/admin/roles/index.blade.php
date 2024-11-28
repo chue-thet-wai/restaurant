@@ -3,12 +3,18 @@
 @section('content')
 
 <x-container>
-    <div class="card">
-        <div class="card-header">Manage Roles</div>
-        <div class="card-body">
-            @if ($check_permission['create'])
-                <a href="{{ route('roles.create') }}" class="btn btn-success btn-sm my-2"><i class="bi bi-plus-circle"></i> Add New Role</a>
-            @endif
+    <div class="card" id="custom-card">
+        <div class="card-body">  
+            <div class="button-container">
+                <a href="{{ route('roles.index') }}" id="list-btn" class="list-active">
+                    Role List
+                </a>
+                @if ($check_permission['create'])
+                    <a href="{{ route('roles.create') }}" id="add-btn">
+                        Add New Role
+                    </a>
+                @endif
+            </div>    
             
             @include('components.common_table', [
                 'headers' => ['Name'],

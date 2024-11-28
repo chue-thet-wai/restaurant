@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Interfaces\CommonRepositoryInterface;
+use App\Models\BranchOpeningTime;
+use App\Models\Reservation;
+use App\Models\TimeSlots;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -17,9 +21,14 @@ class HomeController extends Controller
      *
      * @return void
      */
-    public function __construct()
+    private CommonRepositoryInterface $commonRepository;
+    protected $nowDate;
+    
+    public function __construct(CommonRepositoryInterface $commonRepository) 
     {
         $this->middleware('auth');
+        $this->commonRepository = $commonRepository;
+        $this->nowDate  = date('Y-m-d H:i:s', time());
     }
 
     /**
@@ -29,89 +38,35 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $totalUsers = User::count();
-        $totalPremiumUsers = 5;
-        $totalNormalUsers  = 10;
-        $totalUsersThisMonth = 10;
-        $totalPremiumUsersThisMonth = 5;
-        $totalNormalUsersThisMonth = 10;
-        $totalIncomeThisMonth    = 500000;
-        $totalIncomePremium      = 300000;
-        $totalIncomePoint       = 200000;
+       
+        $allBooking      = 0;
+        $newBooking      = 0;
+        $acceptedBooking = 0;
+        $rejectedBooking = 0;
+        $newOrder        = 0;
 
-        
-        /*$totalUsers = User::where('is_admin', '0')
-                ->where('is_active', '1')
-                ->count();
+        $allBooking      =Reservation::count();
+        $newBooking      =Reservation::where('status','1')->count();
+        $acceptedBooking =Reservation::where('status','2')->count();
+        $rejectedBooking =Reservation::where('status','3')->count();
 
-        
-        $totalPremiumUsers = User::where('is_admin', '0')
-                ->whereHas('userInfo', function ($query) {
-                    $query->where('membership_expire', '>=', Carbon::now());
-                })
-                ->count();
-
-        
-        $totalNormalUsers = User::where('is_admin', '0')
-                ->whereHas('userInfo', function ($query) {
-                    $query->where('membership_expire', '<', Carbon::now())
-                        ->orWhereNull('membership_expire');
-                })
-                ->count();
-
-        $totalUsersThisMonth = User::where('is_admin', '0')
-                                ->where('is_active', '1')
-                                ->whereYear('created_at', Carbon::now()->year)
-                                ->whereMonth('created_at', Carbon::now()->month)
-                                ->count();
-        
-        $totalPremiumUsersThisMonth = User::where('is_admin', '0')
-                                ->whereHas('userInfo', function ($query) {
-                                    $query->where('membership_expire', '>=', Carbon::now());
-                                })
-                                ->whereYear('created_at', Carbon::now()->year)
-                                ->whereMonth('created_at', Carbon::now()->month)
-                                ->count();
-        
-        $totalNormalUsersThisMonth = User::where('is_admin', '0')
-                                ->whereHas('userInfo', function ($query) {
-                                    $query->where('membership_expire', '<', Carbon::now())
-                                        ->orWhereNull('membership_expire');
-                                })
-                                ->whereYear('created_at', Carbon::now()->year)
-                                ->whereMonth('created_at', Carbon::now()->month)
-                                ->count();
-        
-        $totalIncomeThisMonth = DB::table('mydt_transactions')
-                                    ->whereYear('created_at', Carbon::now()->year)
-                                    ->whereMonth('created_at', Carbon::now()->month)
-                                    ->sum('amount');
-        
-        $totalIncomePremium    = DB::table('mydt_transactions')
-                                    ->whereYear('created_at', Carbon::now()->year)
-                                    ->whereMonth('created_at', Carbon::now()->month)
-                                    ->where('plan_type',config('constant.plan_type.package'))
-                                    ->sum('amount');
-        
-        $totalIncomePoint       = DB::table('mydt_transactions')
-                                    ->whereYear('created_at', Carbon::now()->year)
-                                    ->whereMonth('created_at', Carbon::now()->month)
-                                    ->where('plan_type',config('constant.plan_type.point'))
-                                    ->sum('amount');*/
+        $newOrder = Reservation::leftJoin('myrt_branch', 'myrt_branch.id', '=', 'myrt_reservations.branch_id')
+                            ->orderBy('myrt_reservations.id', 'DESC')
+                            ->whereExists(function ($query) {
+                                $query->select(DB::raw(1)) 
+                                    ->from('myrt_order_menu')
+                                    ->whereRaw('myrt_order_menu.order_id = myrt_reservations.order_id'); 
+                            })
+                            ->where('myrt_reservations.status','2')
+                            ->count();
         
         return view('home', compact(
-            'totalUsers', 
-            'totalPremiumUsers', 
-            'totalNormalUsers',
-            'totalUsersThisMonth', 
-            'totalPremiumUsersThisMonth', 
-            'totalNormalUsersThisMonth',
-            'totalIncomeThisMonth', 
-            'totalIncomePremium', 
-            'totalIncomePoint',
+            'allBooking', 
+            'newBooking', 
+            'acceptedBooking',
+            'rejectedBooking', 
+            'newOrder',
         ));
-
-        //return view('home');
     }
 
     public static function getDashboardPermission()
@@ -155,27 +110,49 @@ class HomeController extends Controller
         return $returnArray;
     }
 
-    public function getPremiumPurchaseHistory(Request $request)
+    public function getAvailableTimes(Request $request)
     {
-        $premiumPurchaseHistory = DB::table('mydt_transactions')
-                                    ->join('users', 'users.id', '=', 'mydt_transactions.user_id') 
-                                    ->where('mydt_transactions.plan_type', config('constant.plan_type.package'))
-                                    ->select('mydt_transactions.*', 'users.name') 
-                                    ->orderBy('mydt_transactions.created_at', 'desc') 
-                                    ->limit(5)
-                                    ->get();
-        return response()->json($premiumPurchaseHistory);
+        $branchId = $request->query('branch');
+        $date     = $request->query('date');
+
+        // Validate input
+        if (!$branchId || !$date) {
+            return response()->json(['error' => 'Invalid branch or date'], 400);
+        }
+
+        $reservationDay = Carbon::parse($date)->format('D'); 
+
+        $branchOpeningTimes = BranchOpeningTime::where('branch_id', $branchId)
+            ->where('day', $reservationDay)
+            ->first();
+
+        $start_time = $branchOpeningTimes ? $branchOpeningTimes->start_time : null;
+        $end_time   = $branchOpeningTimes ? $branchOpeningTimes->end_time : null;
+        $is_offday  = $branchOpeningTimes ? $branchOpeningTimes->is_offday : false;
+
+        $availableTimes = [];
+        if ($is_offday) {
+            return response()->json(['times' => $availableTimes]);
+        }else if (is_null($start_time) || is_null($end_time)) {
+            return response()->json(['times' => $availableTimes]);
+        }
+        
+        $availableTimes = TimeSlots::orderBy('time', 'ASC')
+            ->whereBetween('time', [$start_time, $end_time])
+            ->pluck('time');
+
+        return response()->json(['times' => $availableTimes]);
     }
 
-    public function getPointPurchaseHistory(Request $request)
+    public function getAvailableTablesList(Request $request)
     {
-        $pointPurchaseHistory  = DB::table('mydt_transactions')
-                                    ->join('users', 'users.id', '=', 'mydt_transactions.user_id') 
-                                    ->where('mydt_transactions.plan_type', config('constant.plan_type.point'))
-                                    ->select('mydt_transactions.*', 'users.name') 
-                                    ->orderBy('mydt_transactions.created_at', 'desc') 
-                                    ->limit(5)
-                                    ->get();
-        return response()->json($pointPurchaseHistory);
+        $branch = $request->input('branch');
+        $date = $request->input('date');
+        $time = $request->input('time');
+       
+        $availableTables = [];
+        $availableTables=$this->commonRepository->getAvailableTable($time,$date,$branch);
+        return response()->json(['tables' => $availableTables]);
     }
+
 }

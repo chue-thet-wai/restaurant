@@ -1,22 +1,22 @@
 @extends('layouts.web_app')
 
 @section('content')
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>-->
 
 <div class="container">
     <header>
         <div class="system-bar">
             <div class="row">
-                <div class="col-10 left">Thank You!</div>
+                <div class="col-10 left" >Thank You!</div>
                 <div class="col-2 right">
-                    <a href="" class="header-icon">
-                        <i class="bi bi-info-square"></i>
+                    <a href="/information/{{$reservation->order_id}}" class="header-icon">
+                        <img src="{{ asset('assets/images/information.png') }}" alt="" >
                     </a>
                 </div>
             </div>
         </div>
     </header>
-    <div class="mt-5 page">
+    <div class="mt-3 page">
         @include('layouts.error') <!-- Display error messages here -->
 
         <div class="reservation-confirm-card text-center" id="reservation-confirm-card">
@@ -47,10 +47,13 @@
                 <div class="mb-3 row">
                     <label class="col-sm-12 text-start">Show your booking ID to our front desk.</label>
                 </div>
-
-                <button type="button" class="mt-3 px-3 btn btn-primary" id="save-to-gallery">Save to Gallery</button>
+                <a href="/reservation-confirm-download/{{ $reservation->order_id }}">
+                    <button type="button" class="mt-5 px-3 btn btn-primary" id="reservation-confirm-btn">Save Booking</button>
+                </a>
                 <br />
-                <a href="/menu/{{$reservation->order_id}}"><button type="button" class="mt-3 px-3 btn btn-primary" id="save-to-gallery">Choose Menu</button></a>
+                <a href="/menu/{{$reservation->order_id}}">
+                    <button type="button" class="mt-3 px-3 btn btn-primary" id="reservation-confirm-btn">Choose Menu</button>
+                </a>
             </form>
         </div>
     </div>

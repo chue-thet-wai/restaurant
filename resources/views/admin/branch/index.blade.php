@@ -3,16 +3,22 @@
 @section('content')
 
 <x-container>
-    <div class="card">
-        <div class="card-header">Manage Branch</div>
-        <div class="card-body">
-            @if ($check_permission['create'])
-                <a href="{{ route('branch.create') }}" class="btn btn-success btn-sm my-2"><i class="bi bi-plus-circle"></i> Add New Branch</a>
-            @endif
+    <div class="card" id="custom-card">
+        <div class="card-body">  
+            <div class="button-container">
+                <a href="{{ route('branch.index') }}" id="list-btn" class="list-active">
+                    Branch List
+                </a>
+                @if ($check_permission['create'])
+                    <a href="{{ route('branch.create') }}" id="add-btn">
+                        Add New Branch
+                    </a>
+                @endif
+            </div>    
             
             @include('components.common_table', [
-                'headers' => ['Name','Status','Remark'],
-                'fields' => ['name','status','remark'],
+                'headers' => ['Name','Phone','Address','Status'],
+                'fields' => ['name','phone','address','status'],
                 'items' => $branch,
                 'permissions' => $check_permission,
                 'action'       => true,
