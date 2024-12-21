@@ -196,9 +196,14 @@ class ReservationController extends Controller
     {
         $login_id = Auth::user()->id;
 
-        $request->validate([
-            'table' => 'required_if:status,2',
-        ]);
+        $request->validate(
+            [
+                'table' => 'required_if:status,2',
+            ],
+            [
+                'table.required_if' => 'The requested time from the user falls outside the available timeslot for your branch. Please update your timeslot or inform the customer to reschedule accordingly.',
+            ]
+        );       
 
         DB::beginTransaction();
         try {
